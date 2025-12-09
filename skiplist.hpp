@@ -11,8 +11,10 @@ using namespace std;
 template<typename TYPE, typename COMP_FUNCTOR = std::less<TYPE>>
 class Skiplist {
 public:
+    // EFFECTS: Default construct Skiplist with probability = 0.5
     Skiplist();
 
+    // EFFECTS: Construct Skiplist with chosen probability
     Skiplist(const double _probability);
 
     TYPE& front();
@@ -21,13 +23,13 @@ public:
 
     bool empty();
 
-    size_t size() const;
+    const size_t size() const;
 
     void insert(const TYPE& num);
 
     void erase(const TYPE& num);
 
-    uint32_t getNumLevels() const;
+    const uint32_t getNumLevels() const;
 
     void clear();
 
@@ -49,29 +51,21 @@ private:
         Head() : next(nullptr) {}
     };
 
-    vector<Head> levelHeads;
-    size_t curLevel;
-    size_t size;
-    double probability;
+    vector<Head> levelHeads;    // Vector of head pointers to levels
+    size_t curLevel;            // Current highest level
+    size_t elementCount;        // Number of elements inserted into Skiplist
+    double probability;         // Probability of an element being promoted
+
+    /* Random Number Generation */
+
+    // EFFECTS: Returns a reference to a shared Mersenne Twister RNG
+    static std::mt19937& get_gen();
+
+    // EFFECTS: Returns true if the element should be promoted to next level
+    bool should_promote();
+
+    // EFFECTS: Returns the level that an element should be promoted
+    const size_t random_level();
 };
-
-template<typename TYPE, typename COMP_FUNCTOR>
-Skiplist<TYPE, COMP_FUNCTOR>::Skiplist() 
-    : curLevel(1), elementCount(0), probability(0.5) {
-    levelHeads.resize(curLevel);
-}
-
-template<typename TYPE, typename COMP_FUNCTOR>
-Skiplist<TYPE, COMP_FUNCTOR>::Skiplist(const double _probability) 
-    : curLevel(1), elementCount(0), probability(_probability) {
-    levelHeads.resize(curLevel);
-}
-
-bool coin_flip(double p) {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    std::bernoulli_distribution dist(p);
-    return dist(gen);
-}
 
 #endif // SKIPLIST_HPP
