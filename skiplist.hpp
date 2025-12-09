@@ -25,9 +25,11 @@ public:
 
     const size_t size() const;
 
-    void insert(const TYPE& num);
+    // MODIFIES: levelHeads, nodes in skiplist, curLevel, elementCount
+    // EFFECTS: Insert val into skiplist up to level numPromotions
+    void insert(const TYPE& val);
 
-    void erase(const TYPE& num);
+    void erase(const TYPE& val);
 
     const uint32_t getNumLevels() const;
 
@@ -46,15 +48,27 @@ private:
     };
 
     struct Head {
-        Node* next;
+        Node* first;
 
-        Head() : next(nullptr) {}
+        Head() : first(nullptr) {}
     };
 
     vector<Head> levelHeads;    // Vector of head pointers to levels
     size_t curLevel;            // Current highest level
     size_t elementCount;        // Number of elements inserted into Skiplist
     double probability;         // Probability of an element being promoted
+
+    // MODIFIES: levelHeads, nodes in skiplist
+    // EFFECTS: Insert val into skiplist up to level numPromotions
+    void addNode(const TYPE& val, const size_t numPromotions);
+
+    // MODIFIES: levelHeads, nodes in skiplist
+    // EFFECTS: Insert val into level pointed to by h and pointing to below
+    Node* addNodeLevel(const TYPE& val, Head* h, Node* below);
+
+    // MODIFIES: levelHeads, nodes in skiplist
+    // EFFECTS: Insert Node toAdd after Node left
+    void insertNode(Node* left, Node* toAdd);
 
     /* Random Number Generation */
 
